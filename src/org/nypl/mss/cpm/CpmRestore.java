@@ -11,12 +11,15 @@ public class CpmRestore {
     private List<String> files = new ArrayList<String>();
     private File imageFile;
     private File restoreDirectory; 
+    private String user;
     
     public CpmRestore() throws IOException, InterruptedException {
         imageFile = new File("images/M2654-0001.001");
-        restoreDirectory = new File("restored_files");
+        restoreDirectory = new File("restored_files/");
         getFiles();
-        listFiles();
+        getUser();
+        //listFiles();
+        restoreFiles();
         
     }
     
@@ -37,6 +40,27 @@ public class CpmRestore {
             System.out.println(file);
         }
     }
+    
+    private void getUser(){
+        user = files.get(0);
+        files.remove(0);
+        System.out.println("User: " + user);
+    }
+    
+    private void restoreFiles() throws IOException, InterruptedException{
+        for(String file: files){
+            Process p = Runtime.getRuntime().exec("/usr/local/bin/cpmcp -f kpiv -p -t " 
+                    + imageFile.getAbsolutePath()
+                    + " " 
+                    + user
+                    + file
+                    + " "
+                    + restoreDirectory.getAbsolutePath() + "/" + file
+                    );
+            p.waitFor();
+        }
+    }
+    
     public static void main(String[] args) throws IOException, InterruptedException{
         CpmRestore c = new CpmRestore();
     }
