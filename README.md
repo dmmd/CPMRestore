@@ -7,6 +7,6 @@ a command line program for automating the restoration of cp/m files from disk im
 
 dependencies
 ------------
-*commons cli
-*commons io
-*cpmtools executable on system
+* commons cli
+* commons io
+* cpmtools executable on system
