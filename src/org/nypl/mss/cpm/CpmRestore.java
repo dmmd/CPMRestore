@@ -60,8 +60,4 @@ public class CpmRestore {
             p.waitFor();
         }
     }
-    
-    public static void main(String[] args) throws IOException, InterruptedException{
-        CpmRestore c = new CpmRestore();
-    }
 }
