@@ -1,5 +1,7 @@
 package org.nypl.mss.cpm;
 
+import java.io.File;
+import java.io.IOException;
 import org.apache.commons.cli.*;
 
 public class CLI {
@@ -9,15 +11,17 @@ public class CLI {
     private String diskdef;
     private String image;
     private String outputDirectory;
-    private Boolean create;
-    private Boolean preserveTime;
-    private Boolean convertText;
+    private boolean create;
+    private boolean preserveTime;
+    private boolean convertText;
+    private boolean deleteContents;
     
     public CLI(String[] args) throws ParseException{
         this.arguments = args;
         options = createOptions();
         testOptions();
         printOptions();
+        createOutput();
         
     }
 
@@ -60,6 +64,12 @@ public class CLI {
         OptionBuilder.withDescription("Preserve timestamps");
         OptionBuilder.isRequired(false);
         mOptions.addOption(OptionBuilder.create("t"));
+        
+        OptionBuilder.withArgName("String");
+        OptionBuilder.hasArg(false);
+        OptionBuilder.withDescription("Delete contents of output directory");
+        OptionBuilder.isRequired(false);
+        mOptions.addOption(OptionBuilder.create("d"));
 
         mOptions.addOption(new Option("log", "log activities to the console"));
 
@@ -89,6 +99,11 @@ public class CLI {
         else
             convertText = false;
         
+        if(cmd.hasOption("d"))
+            deleteContents = true;
+        else
+            deleteContents = false;
+        
     }
     
         
@@ -103,6 +118,23 @@ public class CLI {
         System.out.println("Create Directory: " + create);
         System.out.println("Preserve timestamps: " + preserveTime);
         System.out.println("Convert to unix: " + convertText);
+    }
+
+    private void createOutput() {
+        if(create == true){
+            File newDir = new File(outputDirectory);
+            if(newDir.exists()){
+                System.out.println("The output directory already exists");
+            }
+            else {
+                try{
+                    newDir.mkdirs();
+                    System.out.println("Output directory created");
+                } catch (Exception e){
+                    System.out.println(e);
+                }
+            }
+        }
     }
     
 }
