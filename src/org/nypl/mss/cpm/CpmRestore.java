@@ -8,23 +8,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CpmRestore {
-    private List<String> files = new ArrayList<String>();
-    private File imageFile;
-    private File restoreDirectory; 
-    private String user;
+    private List<String> files = new ArrayList<String>();    
+    private String diskdef;
+    private String image;
+    private String outputDirectory;
+    private boolean create;
+    private boolean preserveTime;
+    private boolean convertText;
+    private boolean deleteContents;
     
-    public CpmRestore() throws IOException, InterruptedException {
-        imageFile = new File("images/M2654-0001.001");
-        restoreDirectory = new File("restored_files/");
-        getFiles();
-        getUser();
-        //listFiles();
-        restoreFiles();
+    public CpmRestore() {
         
     }
     
+    public void process() throws IOException, InterruptedException{
+        getFiles();
+        listFiles();
+    }
+
     private void getFiles() throws IOException, InterruptedException{
-        Process p = Runtime.getRuntime().exec("/usr/local/bin/cpmls -f kpiv " + imageFile.getAbsolutePath());
+        System.err.println(image);
+        File imageFile = new File(image);
+        if(!imageFile.exists()){
+            System.err.println("IMAGE FILE DOES NOT EXIST");
+            System.exit(1);
+        }
+        Process p = Runtime.getRuntime().exec("/usr/local/bin/cpmls -f kpiv " + new File(image).getAbsolutePath());
         p.waitFor();
         BufferedReader reader=new BufferedReader(new InputStreamReader(p.getInputStream())); 
         String line=reader.readLine(); 
@@ -36,11 +45,18 @@ public class CpmRestore {
     }
     
     private void listFiles(){
+        for(String filename: files){
+            System.out.println(filename);
+        }
+    }
+    /*
+    
+    private void listFiles(){
         for(String file: files){
             System.out.println(file);
         }
     }
-    
+   
     private void getUser(){
         user = files.get(0);
         files.remove(0);
@@ -60,4 +76,53 @@ public class CpmRestore {
             p.waitFor();
         }
     }
+    * 
+    * */
+
+    public boolean isConvertText() {
+        return convertText;
+    }
+
+    public void setConvertText(boolean convertText) {
+        this.convertText = convertText;
+    }
+
+    public String getDiskdef() {
+        return diskdef;
+    }
+
+    public void setDiskdef(String diskdef) {
+        this.diskdef = diskdef;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getOutputDirectory() {
+        return outputDirectory;
+    }
+
+    public void setOutputDirectory(String outputDirectory) {
+        this.outputDirectory = outputDirectory;
+    }
+
+    public boolean isPreserveTime() {
+        return preserveTime;
+    }
+
+    public void setPreserveTime(boolean preserveTime) {
+        this.preserveTime = preserveTime;
+    }
+
+    private void checkImage() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    
+    
 }

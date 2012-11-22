@@ -8,21 +8,34 @@ public class CLI {
     
     private String[] arguments;
     private Options options;
-    private String diskdef;
-    private String image;
-    private String outputDirectory;
     private boolean create;
-    private boolean preserveTime;
-    private boolean convertText;
     private boolean deleteContents;
+    private final CpmRestore cpr;
     
-    public CLI(String[] args) throws ParseException{
+    public static void main(String[] args) throws ParseException, IOException, InterruptedException{
+        CLI cli = new CLI(args);
+    }
+    
+    public CLI(String[] args) throws ParseException, IOException, InterruptedException{
+        for(String s: args){
+            System.out.println(s);
+        }
+        System.out.println("HELLO");
         this.arguments = args;
         options = createOptions();
+        cpr = new CpmRestore();       
         testOptions();
         printOptions();
         createOutput();
+        cpr.process();
+
         
+        
+    }
+    
+    private String[] getTestArgs(){
+        String[] a = {"-f","kpiv", "-i", "M2654-0001.001", "-o" , "output"};
+        return a;
     }
 
     private static Options createOptions() {
@@ -80,49 +93,50 @@ public class CLI {
         CommandLineParser parser = new PosixParser();
         CommandLine cmd = parser.parse( options, arguments);
         
-        diskdef = cmd.getOptionValue("f");    
-        image = cmd.getOptionValue("i");
-        outputDirectory = cmd.getOptionValue("o");
+        cpr.setDiskdef(cmd.getOptionValue("f"));    
+        cpr.setImage(cmd.getOptionValue("i"));
+        cpr.setOutputDirectory(cmd.getOptionValue("o"));
         
         if(cmd.hasOption("c"))
             create = true; 
         else
             create = false;
         
-        if(cmd.hasOption("p"))
-            preserveTime = true;
-        else
-            preserveTime = false;
-        
-        if(cmd.hasOption("t"))
-            convertText = true;
-        else
-            convertText = false;
-        
         if(cmd.hasOption("d"))
             deleteContents = true;
         else
             deleteContents = false;
         
+        if(cmd.hasOption("p"))
+            cpr.setPreserveTime(true);
+        else
+            cpr.setPreserveTime(false);
+        
+        if(cmd.hasOption("t"))
+            cpr.setConvertText(true);
+        else
+            cpr.setConvertText(true);
+        
+        
+        
     }
     
         
-    public static void main(String[] args) throws ParseException{
-        CLI cli = new CLI(args);
-    }
+    
 
     private void printOptions() {
-        System.out.println("DiskDef: " + diskdef);
-        System.out.println("Image Location: " + image);
-        System.out.println("Output Directory Location: " + outputDirectory);
+        System.out.println("DiskDef: " + cpr.getDiskdef());
+        System.out.println("Image Location: " + cpr.getImage());
+        System.out.println("Output Directory Location: " + cpr.getOutputDirectory());
         System.out.println("Create Directory: " + create);
-        System.out.println("Preserve timestamps: " + preserveTime);
-        System.out.println("Convert to unix: " + convertText);
+        System.out.println("Delete directory contents: " + deleteContents);
+        System.out.println("Preserve timestamps: " + cpr.isPreserveTime());
+        System.out.println("Convert to unix: " + cpr.isConvertText());
     }
 
     private void createOutput() {
         if(create == true){
-            File newDir = new File(outputDirectory);
+            File newDir = new File(cpr.getOutputDirectory()).getAbsoluteFile();
             if(newDir.exists()){
                 System.out.println("The output directory already exists");
             }
