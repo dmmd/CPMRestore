@@ -3,3 +3,4 @@ dist
 images/M2654-0001.001
 restored_files/*
 *~
+.DS_Store
