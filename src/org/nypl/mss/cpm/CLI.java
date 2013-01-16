@@ -115,7 +115,7 @@ public class CLI {
         if(cmd.hasOption("t"))
             cpr.setConvertText(true);
         else
-            cpr.setConvertText(true);
+            cpr.setConvertText(false);
         
         
         
